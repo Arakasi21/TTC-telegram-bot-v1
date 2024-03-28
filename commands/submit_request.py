@@ -5,8 +5,12 @@ import logging
 logger = logging.getLogger(__name__)
 
 async def submit_request(update, context):
+    if len(context.args) != 1:
+        await update.message.reply_text("/sumbit_request")
+        return
+
+    request_text = context.args[0]
     user_id = update.effective_chat.id
-    request_text = update.message.text
 
     connection = connect_to_db()
     if not connection:

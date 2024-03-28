@@ -22,7 +22,7 @@ def main() -> None:
 
     start_handler = CommandHandler('start', start)
     register_handler = CommandHandler('register', register)
-    submit_request_handler = MessageHandler(filters.TEXT & (~filters.COMMAND), submit_request)
+    submit_request_handler = CommandHandler('submit_request', submit_request)
     get_requests_handler = CommandHandler('get_requests', get_requests)
 
     application.add_handler(start_handler)

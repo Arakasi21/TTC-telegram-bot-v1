@@ -1,5 +1,5 @@
-from telegram import Update, ReplyKeyboardRemove
-from telegram.ext import CallbackContext, CommandHandler
+from telegram import Update, ReplyKeyboardMarkup
+from telegram.ext import CallbackContext
 from database.connection import connect_to_db
 import logging
 import psycopg2
@@ -8,6 +8,9 @@ logger = logging.getLogger(__name__)
 
 async def start(update: Update, context: CallbackContext) -> None:
     user_id = update.effective_chat.id
+
+    client_keyboard = [['/submit_request', 'check status command v buduwem']]
+    admin_keyboard = [['/get_requests', 'Potom che nit budet']]
 
     connection = connect_to_db()
     if not connection:
@@ -25,18 +28,18 @@ async def start(update: Update, context: CallbackContext) -> None:
 
             if admin:
                 await update.message.reply_text(
-                    "Available commands /get_requests, /another_command",
-                    reply_markup=ReplyKeyboardRemove(),
+                    "Welcome, Admin! Commands are available:",
+                    reply_markup=ReplyKeyboardMarkup(admin_keyboard, one_time_keyboard=True, resize_keyboard=True),
                 )
             else:
                 await update.message.reply_text(
-                    "You can /submit_request",
-                    reply_markup=ReplyKeyboardRemove(),
+                    "Welcome!",
+                    reply_markup=ReplyKeyboardMarkup(client_keyboard, one_time_keyboard=True, resize_keyboard=True),
                 )
         else:
             await update.message.reply_text(
-                "/register <phone number>.",
-                reply_markup=ReplyKeyboardRemove(),
+                "Please /register with your <phone number>.",
+                reply_markup=ReplyKeyboardMarkup([['Register']], one_time_keyboard=True, resize_keyboard=True),
             )
 
     except (Exception, psycopg2.Error) as error:

@@ -1,3 +1,4 @@
+from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters
 from commands.start import start
 from commands.register import register
@@ -7,8 +8,13 @@ from settings.config import TOKEN
 import logging
 
 logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
+    format='%(asctime)s - %(name)s - %(message)s', level=logging.INFO
 )
+
+logging.getLogger("httpx").setLevel(logging.WARNING)
+
+logging.getLogger("httpx").setLevel(logging.INFO)
+
 logger = logging.getLogger(__name__)
 
 def main() -> None:

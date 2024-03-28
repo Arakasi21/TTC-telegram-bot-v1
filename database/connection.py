@@ -1,9 +1,10 @@
 import os
 import psycopg2
 import logging
+from settings.config import DB_URL
+
 from dotenv import load_dotenv
 
-# Load environment variables from .env file
 load_dotenv()
 
 DB_URL = os.getenv('DB_URL')

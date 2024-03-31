@@ -11,5 +11,8 @@ DB_DATABASE = os.getenv('DB_DATABASE')
 DB_HOST = os.getenv('DB_HOST')
 DB_URL = os.getenv('DB_URL')
 
+# Google Drive API Key
+GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
+
 # Telegram Bot Token
 TOKEN = os.getenv('TOKEN')

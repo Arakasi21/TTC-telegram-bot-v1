@@ -1,12 +1,11 @@
 from telegram import Update
-from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters
-
+from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, CallbackContext
+from telegram.ext.filters import _Photo
 from commands.start import start
 from commands.register import register
 from commands.submit_request import submit_request
 from commands.get_requests import get_requests
-from commands.handle_photo import handle_photo
-
+# from commands.handle_photo import handle_photo
 from settings.config import TOKEN
 import logging
 
@@ -20,8 +19,8 @@ logging.getLogger("httpx").setLevel(logging.INFO)
 
 logger = logging.getLogger(__name__)
 
-def unknown_command(update, context):
-    update.message.reply_text("Sorry, I couldn't recognize that command.")
+# def unknown_command(update: Update, context: CallbackContext):
+#     update.message.reply_text("Sorry, I couldn't recognize that command.")
 
 def main() -> None:
     application = ApplicationBuilder().token(TOKEN).build()
@@ -30,14 +29,14 @@ def main() -> None:
     register_handler = CommandHandler('register', register)
     submit_request_handler = CommandHandler('submit_request', submit_request)
     get_requests_handler = CommandHandler('get_requests', get_requests)
-    photo_handler = MessageHandler(Filters.photo, handle_photo)
-
+    # photo_handler = MessageHandler(filters.PHOTO, handle_photo)
+    
+    # application.add_handler(photo_handler)
     application.add_handler(start_handler)
     application.add_handler(register_handler)
     application.add_handler(submit_request_handler)
     application.add_handler(get_requests_handler)
-    application.add_handler(MessageHandler(Filters.command, unknown_command))
-    application.add_handler(photo_handler)
+    # application.add_handler(MessageHandler(filters.COMMAND, unknown_command))
     
 
     application.run_polling()

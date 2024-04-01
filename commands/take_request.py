@@ -72,7 +72,7 @@ async def take_request(update, context):
         if client_id:
             keyboard = [[InlineKeyboardButton("Начать чат", callback_data=f"chat_{client_id}")]]
             reply_markup = InlineKeyboardMarkup(keyboard)
-            await context.bot.send_message(chat_id=admin_id, text=f"Запрос {request_id} теперь отмечен как 'In process'. Нажмите кнопку ниже, чтобы начать чат с клиентом.", reply_markup=reply_markup)
+            await context.bot.send_message(chat_id=admin_id, text="Нажмите кнопку ниже, чтобы начать чат с клиентом.", reply_markup=reply_markup)
     
     except Exception as e:
         logger.error(f"Error updating request status or fetching photo: {e}")

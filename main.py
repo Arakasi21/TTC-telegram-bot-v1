@@ -56,8 +56,6 @@ async def close_chat(update: Update, context: CallbackContext):
         del chat_sessions[from_id]
         await context.bot.send_message(chat_id=from_id, text="Чат завершен.")
 
-
-
 def unknown_command(update: Update, context: CallbackContext):
     update.message.reply_text("Sorry, I couldn't recognize that command.")
 
@@ -65,6 +63,8 @@ def main() -> None:
     application = ApplicationBuilder().token(TOKEN).build()
 
     start_handler = CommandHandler('start', start)
+
+    # переписать блок
     register_handler = CommandHandler('register', register)
     submit_request_handler = CommandHandler('submit_request', submit_request)
     get_requests_handler = CommandHandler('get_requests', get_requests)
@@ -82,16 +82,11 @@ def main() -> None:
     application.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), message_handler))
     application.add_handler(CommandHandler("close", close_chat))
 
-
-    # application.add_handler(submit_request_handler)
-    
     application.add_handler(get_requests_handler)
     application.add_handler(take_request_handler)
     application.add_handler(close_request_handler)
 
-
     application.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), message_handler))
-    
 
     application.run_polling()
 

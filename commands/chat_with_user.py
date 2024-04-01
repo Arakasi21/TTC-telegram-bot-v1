@@ -9,3 +9,9 @@ async def chat_with_user(update: Update, context: CallbackContext):
     user_id = context.args[0]
     message = ' '.join(context.args[1:])
     await context.bot.send_message(chat_id=user_id, text=message)
+
+    # await переменная (message) = context.bot.send_message(chat_id=user_id, text=message) 
+    # как работает в асинхронном 
+    # state system 
+    # внутри state есть user / chat data
+    # reply markupbutton

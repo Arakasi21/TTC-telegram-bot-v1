@@ -35,7 +35,6 @@ async def handle_photo(update: Update, context: CallbackContext):
     except AttributeError:
         print("Warning: Telegram library version might not support 'download' method.")
 
-
 async def save_photo_path_in_database(client_id, photo_path):
     conn = connect_to_db() 
     if conn is not None:

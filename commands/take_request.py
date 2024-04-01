@@ -4,7 +4,6 @@ import logging
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 import os
 
-
 logger = logging.getLogger(__name__)
 
 async def take_request(update, context):
@@ -25,7 +24,6 @@ async def take_request(update, context):
     if not connection:
         await context.bot.send_message(chat_id=user_id, text="Error with connection to db.")
         return
-
     try:
         cursor = connection.cursor()
         # мы получаем photo_path 
@@ -39,10 +37,7 @@ async def take_request(update, context):
             logger.error("Request not found.")
             await context.bot.send_message(chat_id=admin_id, text="Запрос не найден.")
             return
-    
-    
         # photo_info, client_id = result if result else (None, None)
-
         # обновляем статус
         cursor.execute("UPDATE Requests SET status = 'In process', admin_id = %s WHERE request_id = %s", (user_id, request_id))
         connection.commit()
@@ -81,5 +76,3 @@ async def take_request(update, context):
         if connection:
             cursor.close()
             connection.close()
-
-

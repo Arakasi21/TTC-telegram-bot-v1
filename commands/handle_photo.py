@@ -22,7 +22,7 @@ async def handle_photo(update: Update, context: CallbackContext):
         await telegram_file.download_to_drive(temp_photo_path) 
         
         await save_photo_path_in_database(client_id, temp_photo_path)
-        await update.message.reply_text("Your photo has been saved. Your request is now submitted.")
+        await update.message.reply_text("Фотография сохранена и Request отправлен.")
 
         #пока локально сохраняется - не буду удалять фото из /temp. Если в будущем нужно будет сохранять где то - то просто 
 

@@ -2,6 +2,7 @@ from telegram.error import BadRequest
 from database.connection import connect_to_db
 import logging
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+import os
 
 
 logger = logging.getLogger(__name__)
@@ -29,9 +30,17 @@ async def take_request(update, context):
         cursor = connection.cursor()
         # мы получаем photo_path 
         cursor.execute("SELECT photo_id, client_id FROM Requests WHERE request_id = %s", (request_id,))
-        photo_info = cursor.fetchone()
-        client_id= cursor.fetchone()
+        result = cursor.fetchone()
 
+        if result:
+            photo_info, client_id = result
+            print(photo_info)
+        else:
+            logger.error("Request not found.")
+            await context.bot.send_message(chat_id=admin_id, text="Запрос не найден.")
+            return
+    
+    
         # photo_info, client_id = result if result else (None, None)
 
         # обновляем статус
@@ -41,7 +50,11 @@ async def take_request(update, context):
             await context.bot.send_message(chat_id=client_id, text="Ваш запрос принят в обработку.")
 
         if photo_info and photo_info[0]:
-            photo_path = photo_info[0]
+            photo_path = photo_info
+            logger.info(f"Photo path: {photo_path}")
+            logger.info(f"Client id: {client_id}")
+            os.getcwd()
+            
             try:
                 if photo_path.startswith("http"):
                     await context.bot.send_message(chat_id=admin_id, text=f"Photo URL: {photo_path}")
@@ -54,8 +67,13 @@ async def take_request(update, context):
         else:
             await context.bot.send_message(chat_id=admin_id, text="No photo associated with this request.")
 
-        await context.bot.send_message(chat_id=admin_id, text=f"Запрос {request_id} теперь отмечен как 'In process' и взят вами. ID клиента {client_id}")
+        await context.bot.send_message(chat_id=admin_id, text=f"Запрос {request_id} теперь отмечен как 'In process' и взят вами.")
         
+        if client_id:
+            keyboard = [[InlineKeyboardButton("Начать чат", callback_data=f"chat_{client_id}")]]
+            reply_markup = InlineKeyboardMarkup(keyboard)
+            await context.bot.send_message(chat_id=admin_id, text=f"Запрос {request_id} теперь отмечен как 'In process'. Нажмите кнопку ниже, чтобы начать чат с клиентом.", reply_markup=reply_markup)
+    
     except Exception as e:
         logger.error(f"Error updating request status or fetching photo: {e}")
         await context.bot.send_message(chat_id=user_id, text="Error updating request status or fetching photo.")
@@ -64,4 +82,4 @@ async def take_request(update, context):
             cursor.close()
             connection.close()
 
-            
+

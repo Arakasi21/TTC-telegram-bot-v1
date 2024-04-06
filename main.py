@@ -8,7 +8,6 @@ from commands.get_requests import get_requests
 from commands.handle_photo import handle_photo
 from commands.take_request import take_request
 from commands.close_request import close_request
-from commands.chat_with_user import chat_with_user
 from settings.config import TOKEN
 import logging
 
@@ -76,7 +75,6 @@ def main() -> None:
     application.add_handler(photo_handler)
     application.add_handler(start_handler)
     application.add_handler(register_handler)
-    application.add_handler(CommandHandler("chat", chat_with_user))
 
     application.add_handler(CallbackQueryHandler(callback_query_handler))
     application.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), message_handler))

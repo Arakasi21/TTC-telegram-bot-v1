@@ -35,4 +35,3 @@ async def close_request(update: Update, context: ContextTypes.DEFAULT_TYPE) -> i
     finally:
         if connection:
             connection.close()
-    return GET_REQ

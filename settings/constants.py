@@ -1,1 +1,1 @@
-TAKE_REQ, CLOSE_REQ  = range(2)
+TAKE_REQ, CLOSE_CHAT, CLOSE_REQ  = range(3)

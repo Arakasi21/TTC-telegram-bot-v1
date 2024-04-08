@@ -29,7 +29,6 @@ async def start(update: Update, context: CallbackContext) -> None:
             else:
                 await update.message.reply_text(
                     "Здравствуйте! Отправьте Фото для обработки вашего запроса.",
-                    reply_markup=ReplyKeyboardMarkup(client_keyboard, one_time_keyboard=True, resize_keyboard=True),
                 )
         else:
             await update.message.reply_text(

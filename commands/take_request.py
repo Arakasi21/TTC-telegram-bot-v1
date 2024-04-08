@@ -3,7 +3,7 @@ from database.connection import connect_to_db
 import logging
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import ContextTypes
-from settings.constants import CLOSE_REQ
+from settings.constants import CLOSE_CHAT, CLOSE_REQ
 import os
 
 logger = logging.getLogger(__name__)
@@ -15,12 +15,12 @@ async def take_request(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
     if user_id != admin_id:
         await context.bot.send_message(chat_id=user_id, text="No access!")
         return
-
-    if len(context.args) != 1:
-        await update.message.reply_text("Usage: /take_request <request_id>")
-        return
     
-    request_id = context.args[0]
+    if not request_id:
+        if not context.args or len(context.args) != 1:
+            await update.message.reply_text("Usage: /take_request <request_id>")
+            return
+        request_id = context.args[0]
 
     connection = connect_to_db()
     if not connection:
@@ -51,7 +51,6 @@ async def take_request(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
             logger.info(f"Photo path: {photo_path}")
             logger.info(f"Client id: {client_id}")
             os.getcwd()
-            
             try:
                 if photo_path.startswith("http"):
                     await context.bot.send_message(chat_id=admin_id, text=f"Photo URL: {photo_path}")
@@ -70,7 +69,7 @@ async def take_request(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
             keyboard = [[InlineKeyboardButton("Начать чат", callback_data=f"chat_{client_id}")]]
             reply_markup = InlineKeyboardMarkup(keyboard)
             await context.bot.send_message(chat_id=admin_id, text="Нажмите кнопку ниже, чтобы начать чат с клиентом.", reply_markup=reply_markup)
-            # return CLOSE_CHAT
+            return CLOSE_CHAT
     
     except Exception as e:
         logger.error(f"Error updating request status or fetching photo: {e}")

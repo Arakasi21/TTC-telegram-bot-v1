@@ -1,9 +1,12 @@
 from database.connection import connect_to_db
+from telegram import Update
+from telegram.ext import ContextTypes
+from settings.constants import TAKE_REQ 
 import logging
 
 logger = logging.getLogger(__name__)
 
-async def get_requests(update, context):
+async def get_requests(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     user_id = update.effective_chat.id
     admin_id = 577163143  # потом заменю
 
@@ -34,3 +37,5 @@ async def get_requests(update, context):
     finally:
         if connection:
             connection.close()
+
+    return TAKE_REQ

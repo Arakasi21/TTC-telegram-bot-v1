@@ -1,12 +1,14 @@
 from telegram.error import BadRequest
 from database.connection import connect_to_db
 import logging
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
+from telegram.ext import ContextTypes
+from settings.constants import CLOSE_REQ
 import os
 
 logger = logging.getLogger(__name__)
 
-async def take_request(update, context):
+async def take_request(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     user_id = update.effective_chat.id
     admin_id = 577163143  # переделать
     
@@ -68,6 +70,7 @@ async def take_request(update, context):
             keyboard = [[InlineKeyboardButton("Начать чат", callback_data=f"chat_{client_id}")]]
             reply_markup = InlineKeyboardMarkup(keyboard)
             await context.bot.send_message(chat_id=admin_id, text="Нажмите кнопку ниже, чтобы начать чат с клиентом.", reply_markup=reply_markup)
+            # return CLOSE_CHAT
     
     except Exception as e:
         logger.error(f"Error updating request status or fetching photo: {e}")
@@ -76,3 +79,4 @@ async def take_request(update, context):
         if connection:
             cursor.close()
             connection.close()
+    return CLOSE_REQ

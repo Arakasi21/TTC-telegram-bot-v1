@@ -1,8 +1,8 @@
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, CallbackContext, CallbackQueryHandler, ConversationHandler
-from telegram.ext.filters import _Photo
 from commands.start import start
 from commands.register import register
+from settings.constants import TAKE_REQ, CLOSE_REQ
 from commands.get_requests import get_requests
 from commands.handle_photo import handle_photo
 from commands.take_request import take_request
@@ -10,6 +10,7 @@ from commands.close_request import close_request
 from commands.chat import callback_query_handler, message_handler, close_chat
 from settings.config import TOKEN
 import logging
+
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(message)s', level=logging.INFO
@@ -24,7 +25,6 @@ logger = logging.getLogger(__name__)
 def unknown_command(update: Update, context: CallbackContext):
     update.message.reply_text("Sorry, I couldn't recognize that command.")
 
-
 async def cancel(update: Update, context: CallbackContext) -> int:
     return ConversationHandler.END
 
@@ -37,9 +37,22 @@ def main() -> None:
     register_handler = CommandHandler('register', register)
 
     # admin functionality
-    get_requests_handler = CommandHandler('get_requests', get_requests)
-    take_request_handler = CommandHandler('take_request', take_request)
-    close_request_handler = CommandHandler('close_request', close_request)
+
+    conv_handler = ConversationHandler(
+        entry_points=[CommandHandler("get_requests",get_requests)],
+        states={
+            TAKE_REQ: [CommandHandler('take_request', take_request)],
+            # CLOSE_CHAT: [CommandHandler("close", close_chat)],
+            CLOSE_REQ: [CommandHandler('close_request', close_request)]
+        },
+        fallbacks=[CommandHandler("cancel", cancel)],
+    )
+
+    application.add_handler(conv_handler)
+
+    # get_requests_handler = CommandHandler('get_requests', get_requests)
+    # take_request_handler = CommandHandler('take_request', take_request)
+    # close_request_handler = CommandHandler('close_request', close_request)
 
     # user sending photo and creating request
     photo_handler = MessageHandler(filters.PHOTO, handle_photo)
@@ -54,9 +67,9 @@ def main() -> None:
     application.add_handler(CommandHandler("close", close_chat))
 
     # admin function's handler
-    application.add_handler(get_requests_handler)
-    application.add_handler(take_request_handler)
-    application.add_handler(close_request_handler)
+    # application.add_handler(get_requests_handler)
+    # application.add_handler(take_request_handler)
+    # application.add_handler(close_request_handler)
 
     application.run_polling()
 

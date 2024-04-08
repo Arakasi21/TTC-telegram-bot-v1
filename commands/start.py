@@ -8,10 +8,6 @@ logger = logging.getLogger(__name__)
 
 async def start(update: Update, context: CallbackContext) -> None:
     user_id = update.effective_chat.id
-
-    client_keyboard = [['/submit_request', 'check status command v buduwem']]
-    admin_keyboard = [['/get_requests', 'Potom che nit budet']]
-
     connection = connect_to_db()
     if not connection:
         await update.message.reply_text("Error with connection to DB /start.")
@@ -28,12 +24,11 @@ async def start(update: Update, context: CallbackContext) -> None:
 
             if admin:
                 await update.message.reply_text(
-                    "Welcome, Admin! Commands are available:",
-                    reply_markup=ReplyKeyboardMarkup(admin_keyboard, one_time_keyboard=True, resize_keyboard=True),
+                    "Здравствуйте, Admin!"
                 )
             else:
                 await update.message.reply_text(
-                    "Welcome!",
+                    "Здравствуйте! Отправьте Фото для обработки вашего запроса.",
                     reply_markup=ReplyKeyboardMarkup(client_keyboard, one_time_keyboard=True, resize_keyboard=True),
                 )
         else:

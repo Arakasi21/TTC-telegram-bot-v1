@@ -1,9 +1,11 @@
 from database.connection import connect_to_db
+from telegram import Update
+from telegram.ext import ContextTypes
 import logging
 
 logger = logging.getLogger(__name__)
 
-async def close_request(update, context):
+async def close_request(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     user_id = update.effective_chat.id
     admin_id = 577163143  # переделать
     
@@ -33,3 +35,4 @@ async def close_request(update, context):
     finally:
         if connection:
             connection.close()
+    return GET_REQ

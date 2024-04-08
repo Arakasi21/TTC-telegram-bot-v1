@@ -1,0 +1,1 @@
+TAKE_REQ, CLOSE_REQ  = range(2)

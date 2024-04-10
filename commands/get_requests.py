@@ -24,11 +24,10 @@ async def get_requests(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
         cursor.execute("SELECT request_id, status FROM Requests WHERE status = 'New' OR status = 'Pending'")
         rows = cursor.fetchall()
         
-        keyboard = [[InlineKeyboardButton(f"Request ID: {row[0]}, Status: {row[1]}", callback_data=f"take_request{row[0]}")] for row in rows]
+        keyboard = [[InlineKeyboardButton(f"Request ID: {row[0]}, Status: {row[1]}", callback_data=f"take_{row[0]}")] for row in rows]
         reply_markup = InlineKeyboardMarkup(keyboard)
         await update.message.reply_text('Please select a request:', reply_markup=reply_markup)
 
-        
         # if rows:
         #     message_text = "List of requests:\n"
         #     for row in rows:

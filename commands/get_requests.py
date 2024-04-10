@@ -19,7 +19,7 @@ async def get_requests(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
         await context.bot.send_message(chat_id=user_id, text="Error with connection to db.")
         return
 
-    try:
+    try:    
         cursor = connection.cursor()
         cursor.execute("SELECT request_id, status FROM Requests WHERE status = 'New' OR status = 'Pending'")
         rows = cursor.fetchall()

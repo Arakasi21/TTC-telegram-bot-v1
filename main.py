@@ -19,13 +19,6 @@ logging.getLogger("httpx").setLevel(logging.WARNING)
 logging.getLogger("httpx").setLevel(logging.INFO)
 logger = logging.getLogger(__name__)
 
-async def handle_request_selection(update: Update, context: CallbackContext) -> int:
-    query = update.callback_query
-    await query.answer()
-    request_id = query.data.split('_')
-    await take_request(context, request_id)
-    await query.message.delete()
-
 def unknown_command(update: Update, context: CallbackContext):
     update.message.reply_text("Sorry, I couldn't recognize that command.")
 
@@ -63,7 +56,6 @@ def main() -> None:
 
     # chat
     application.add_handler(CallbackQueryHandler(callback_query_handler))
-    application.add_handler(CallbackQueryHandler(handle_request_selection, pattern='^take_'))
     application.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), message_handler))
     application.add_handler(CommandHandler("close", close_chat))
 

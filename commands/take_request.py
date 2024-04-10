@@ -8,7 +8,7 @@ import os
 
 logger = logging.getLogger(__name__)
 
-async def take_request(update: Update, context: ContextTypes.DEFAULT_TYPE, request_id: str = None) -> int:
+async def take_request(update: Update, context: ContextTypes.DEFAULT_TYPE, request_id: int) -> int:
     user_id = update.effective_chat.id
     admin_id = 577163143  # переделать
     

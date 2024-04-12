@@ -32,6 +32,7 @@ async def cancel(update: Update, context: CallbackContext) -> int:
 def main() -> None:
     application = ApplicationBuilder().token(TOKEN).build()
     start_handler = CommandHandler('start', start)
+    
     register_handler = CommandHandler('register', register)
 
     # admin functionality

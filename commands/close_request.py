@@ -18,8 +18,6 @@ async def close_request(update: Update, context: ContextTypes.DEFAULT_TYPE, requ
             await update.message.reply_text("Usage: /close_request <request_id>")
             return  ConversationHandler.END
         request_id = context.args[0]
-    
-    request_id = context.args[0]
 
     connection = connect_to_db()
     if not connection:

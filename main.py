@@ -16,8 +16,11 @@ logging.basicConfig(
 )
 
 logging.getLogger("httpx").setLevel(logging.WARNING)
-logging.getLogger("httpx").setLevel(logging.INFO)
 logger = logging.getLogger(__name__)
+
+def error_handler(update, context):
+    """Log the error and send a message to notify the developer."""
+    logger.error(msg="Exception while handling an update:", exc_info=context.error)
 
 def unknown_command(update: Update, context: CallbackContext):
     update.message.reply_text("Sorry, I couldn't recognize that command.")
@@ -60,10 +63,12 @@ def main() -> None:
     application.add_handler(photo_handler)
     application.add_handler(register_handler)
 
+    application.add_error_handler(error_handler)
+
+
     # chat
     application.add_handler(CallbackQueryHandler(callback_query_handler))
     application.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), message_handler))
-    application.add_handler(CommandHandler("close", close_chat))
 
     application.run_polling()
 

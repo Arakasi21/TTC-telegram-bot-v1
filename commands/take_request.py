@@ -66,7 +66,7 @@ async def take_request(update: Update, context: ContextTypes.DEFAULT_TYPE, reque
         await context.bot.send_message(chat_id=admin_id, text=f"Запрос {request_id} теперь отмечен как 'In process' и взят вами.")
         
         if client_id:
-            keyboard = [[InlineKeyboardButton("Начать чат", callback_data=f"chat_{client_id}")]]
+            keyboard = [[InlineKeyboardButton("Начать чат", callback_data=f"chat_{request_id}_{client_id}")]]
             reply_markup = InlineKeyboardMarkup(keyboard)
             await context.bot.send_message(chat_id=admin_id, text="Нажмите кнопку ниже, чтобы начать чат с клиентом.", reply_markup=reply_markup)
             return CLOSE_CHAT
@@ -78,4 +78,3 @@ async def take_request(update: Update, context: ContextTypes.DEFAULT_TYPE, reque
         if connection:
             cursor.close()
             connection.close()
-    return CLOSE_REQ

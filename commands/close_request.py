@@ -1,29 +1,31 @@
 from database.connection import connect_to_db
-from telegram import Update
-from telegram.ext import ContextTypes
+from telegram import Update, InlineKeyboardMarkup
+from telegram.ext import ContextTypes, ConversationHandler
 import logging
 
 logger = logging.getLogger(__name__)
 
-async def close_request(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+async def close_request(update: Update, context: ContextTypes.DEFAULT_TYPE, request_id: int) -> int:
     user_id = update.effective_chat.id
     admin_id = 577163143  # переделать
     
     if user_id != admin_id:
         await context.bot.send_message(chat_id=user_id, text="No access!")
-        return
-
-    if len(context.args) != 1:
-        await update.message.reply_text("Usage: /close_request <request_id>")
-        return
+        return ConversationHandler.END
+    
+    if not request_id:
+        if not context.args or len(context.args) != 1:
+            await update.message.reply_text("Usage: /close_request <request_id>")
+            return  ConversationHandler.END
+        request_id = context.args[0]
     
     request_id = context.args[0]
 
     connection = connect_to_db()
     if not connection:
         await context.bot.send_message(chat_id=user_id, text="Error with connection to db.")
-        return
-
+        return ConversationHandler.END
+    
     try:
         cursor = connection.cursor()
         cursor.execute("UPDATE Requests SET status = 'Closed', admin_id = %s WHERE request_id = %s", (user_id, request_id))
@@ -35,3 +37,6 @@ async def close_request(update: Update, context: ContextTypes.DEFAULT_TYPE) -> i
     finally:
         if connection:
             connection.close()
+    if update.callback_query:
+        await update.callback_query.message.edit_reply_markup(reply_markup=InlineKeyboardMarkup([]))
+    return ConversationHandler.END

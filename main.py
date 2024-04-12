@@ -42,13 +42,13 @@ def main() -> None:
         fallbacks=[CommandHandler("cancel", cancel)],
     )
 
-    client_conv_handler = ConversationHandler(
+    # client_conv_handler = ConversationHandler(
         # entry_points=[CommandHandler("photo_handler",photo_handler)],
-        states={
+        # states={            
             # Message handler, then close chat, then feedback
-        },
-        fallbacks=[CommandHandler("cancel",cancel)],
-    )
+    #     },
+    #     fallbacks=[CommandHandler("cancel",cancel)],
+    # )
 
     application.add_handler(admin_conv_handler)
     # application.add_handler(client_conv_handler)

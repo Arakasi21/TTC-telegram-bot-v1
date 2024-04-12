@@ -35,6 +35,4 @@ async def close_request(update: Update, context: ContextTypes.DEFAULT_TYPE, requ
     finally:
         if connection:
             connection.close()
-    if update.callback_query:
-        await update.callback_query.message.edit_reply_markup(reply_markup=InlineKeyboardMarkup([]))
     return ConversationHandler.END

@@ -19,8 +19,8 @@ logging.getLogger("httpx").setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
 
 def error_handler(update, context):
-    """Log the error and send a message to notify the developer."""
-    logger.error(msg="Exception while handling an update:", exc_info=context.error)
+    """Log Errors caused by Updates."""
+    logger.error(f'Update {update} caused error {context.error}')
 
 def unknown_command(update: Update, context: CallbackContext):
     update.message.reply_text("Sorry, I couldn't recognize that command.")

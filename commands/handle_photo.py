@@ -1,46 +1,66 @@
-from telegram.ext import CallbackContext
+import psycopg2
+from telegram.ext import CallbackContext, ConversationHandler
 from telegram import Update
 from database.connection import connect_to_db
 import uuid
 import os
 
+from settings.constants import SUBMIT_TEXT
+
+# from settings.constants import SUBMIT_PHOTO, SUBMIT_TEXT, SEND_FEEDBACK
+
+# A dictionary to store the temporary photo paths for each user
+temp_photo_paths = {}
+
 async def handle_photo(update: Update, context: CallbackContext):
-    photo_file = update.message.photo[-1]
-
     client_id = update.message.from_user.id
-    photo_number = str(uuid.uuid4())
-    photo_name = f"{client_id}_{photo_number}.jpg"
+    if update.message.photo:
+        photo_file = update.message.photo[-1]
 
-    temp_photo_dir = "./temp_photos"
-    temp_photo_path = os.path.join(temp_photo_dir, photo_name)
+        photo_number = str(uuid.uuid4())
+        photo_name = f"{client_id}_{photo_number}.jpg"
 
-    if not os.path.exists(temp_photo_dir):
-        os.makedirs(temp_photo_dir)
+        temp_photo_dir = "./temp_photos"
+        temp_photo_path = os.path.join(temp_photo_dir, photo_name)
 
-    try:
-        telegram_file = await photo_file.get_file()
-        await telegram_file.download_to_drive(temp_photo_path) 
-        
-        await save_photo_path_in_database(client_id, temp_photo_path)
-        await update.message.reply_text("Фотография сохранена и Request отправлен.")
+        if not os.path.exists(temp_photo_dir):
+            os.makedirs(temp_photo_dir)
 
-        #пока локально сохраняется - не буду удалять фото из /temp. Если в будущем нужно будет сохранять где то - то просто 
+        try:
+            telegram_file = await photo_file.get_file()
+            await telegram_file.download_to_drive(temp_photo_path)
 
-         # server_drive_path = await upload_to_server_drive(temp_photo_path, photo_name)
+            # Store the temporary photo path for this user
+            temp_photo_paths[client_id] = temp_photo_path
 
-          # await save_photo_path_in_database(client_id, server_drive_path)
+            await context.bot.send_message(chat_id=update.effective_chat.id, text="Пожалуйста опишите проблему.")
+            return SUBMIT_TEXT
 
-        # os.remove(temp_photo_path)
+        except AttributeError:
+            print("Warning: Telegram library version might not support 'download' method.")
 
-    except AttributeError:
-        print("Warning: Telegram library version might not support 'download' method.")
+async def handle_description(update: Update, context: CallbackContext):
+    client_id = update.message.from_user.id
+    problem_description = update.message.text
 
-async def save_photo_path_in_database(client_id, photo_path):
-    conn = connect_to_db() 
+    temp_photo_path = temp_photo_paths.get(client_id)
+
+    if temp_photo_path:
+        await save_photo_path_in_database(client_id, temp_photo_path, problem_description)
+        await update.message.reply_text("Запрос отправлен. Ожидайте ответа.")
+        del temp_photo_paths[client_id]
+    else:
+        await update.message.reply_text("No photo found. Please send a photo first.")
+    return ConversationHandler.END
+
+async def save_photo_path_in_database(client_id, photo_path, problem_description):
+    conn = connect_to_db()
     if conn is not None:
         try:
             cursor = conn.cursor()
-            cursor.execute("INSERT INTO Requests (client_id, photo_id, timestamp, status) VALUES (%s, %s, CURRENT_TIMESTAMP, 'New')", (client_id, photo_path))
+            cursor.execute(
+                "INSERT INTO Requests (client_id, photo_id, timestamp, status, problem_description) VALUES (%s, %s, CURRENT_TIMESTAMP, 'New', %s)",
+                (client_id, photo_path, problem_description))
             conn.commit()
         except (Exception, psycopg2.Error) as error:
             print(f"Error while inserting into database: {error}")
